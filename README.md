@@ -6,19 +6,17 @@ Testcord is a desktop-first communication platform built with WPF on .NET 8, ASP
 
 ```text
 testcord/
-├── client/
-│   └── Testcord.Desktop/
-├── server/
-│   └── Testcord.Server/
-├── shared/
-│   └── Testcord.Shared/
-├── infrastructure/
-├── docker/
-│   └── mysql/
-├── docs/
-├── AGENTS.md
-├── README.md
-└── docker-compose.yml
+|-- client/
+|   `-- Testcord.Desktop/
+|-- server/
+|   `-- Testcord.Server/
+|-- shared/
+|   `-- Testcord.Shared/
+|-- infrastructure/
+|-- docs/
+|-- AGENTS.md
+|-- README.md
+`-- Testcord.sln
 ```
 
 ## Stage 1 Scope
@@ -28,7 +26,7 @@ Stage 1 establishes the solution, project structure, desktop shell, server start
 Current audit status:
 
 - Confirmed locally: solution builds, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, WPF client builds and launches.
-- Not confirmed locally: MySQL container startup and migration application to a live database, because the MySQL Docker image pull currently fails with `EOF` during layer download.
+- Not confirmed locally: migration application to a live database, because local MySQL server is not yet available on this machine.
 
 ## Projects
 
@@ -39,8 +37,7 @@ Current audit status:
 ## Prerequisites
 
 - .NET SDK 8.0+
-- Docker Desktop
-- MySQL container support through Docker Compose
+- Local MySQL Server 8.x
 
 ## Configuration
 
@@ -56,7 +53,7 @@ Client settings live in:
 
 Important server environment variables:
 
-- `TESTCORD_ConnectionStrings__MySql`
+- `TESTCORD_ConnectionStrings__DefaultConnection`
 - `TESTCORD_Smtp__Host`
 - `TESTCORD_Smtp__Port`
 - `TESTCORD_Smtp__UserName`
@@ -64,15 +61,16 @@ Important server environment variables:
 - `TESTCORD_Smtp__FromEmail`
 - `TESTCORD_Smtp__FromName`
 
-## Run MySQL
+## Configure Local MySQL
 
 ```powershell
-docker compose up -d mysql
+server=localhost;port=3306;database=testcord;user=root;password=1234
 ```
 
-The default database name is `testcord`.
-
-Important: Stage 1 is not fully complete until Docker Desktop is running, the MySQL image pulls successfully, and the container actually starts.
+1. Install MySQL locally.
+2. Create database `testcord`.
+3. Update `server/Testcord.Server/appsettings.json` or set `TESTCORD_ConnectionStrings__DefaultConnection`.
+4. Ensure MySQL is listening on `localhost:3306`.
 
 ## Restore Dependencies
 
@@ -125,10 +123,10 @@ dotnet publish .\server\Testcord.Server\Testcord.Server.csproj -c Release
 
 The remaining blocker is infrastructure verification:
 
-- Docker daemon is reachable only with elevated access, but pulling `mysql:8.4` currently fails with `EOF` during image download.
+- A local MySQL server is not currently installed or reachable on `localhost:3306`.
 - Because MySQL is not running, `dotnet dotnet-ef database update` cannot complete against a live database.
 - Until that is fixed, Stage 1 is only partially complete.
 
 ## Next Step
 
-After Docker/MySQL is confirmed locally, rerun the migration, verify `GET /api/health` shows database connectivity, and only then move to Auth.
+After local MySQL is installed and reachable, rerun the migration, verify `GET /api/health` shows database connectivity, and only then move to Auth.

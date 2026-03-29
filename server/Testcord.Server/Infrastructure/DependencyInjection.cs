@@ -10,8 +10,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString =
-            configuration.GetConnectionString("MySql")
-            ?? "Server=localhost;Port=3306;Database=testcord;User=testcord;Password=testcord;";
+            configuration.GetConnectionString("DefaultConnection")
+            ?? "server=localhost;port=3306;database=testcord;user=root;password=1234";
         var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
 
         services.AddDbContext<TestcordDbContext>(options =>

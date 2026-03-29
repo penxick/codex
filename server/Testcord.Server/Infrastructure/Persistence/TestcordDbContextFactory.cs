@@ -7,7 +7,7 @@ public sealed class TestcordDbContextFactory : IDesignTimeDbContextFactory<Testc
 {
     public TestcordDbContext CreateDbContext(string[] args)
     {
-        var connectionString = "Server=localhost;Port=3306;Database=testcord;User=testcord;Password=testcord;";
+        var connectionString = "server=localhost;port=3306;database=testcord;user=root;password=1234";
         var optionsBuilder = new DbContextOptionsBuilder<TestcordDbContext>();
         var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
 

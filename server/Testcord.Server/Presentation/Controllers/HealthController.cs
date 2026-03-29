@@ -14,18 +14,28 @@ public sealed class HealthController : ControllerBase
         {
             var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
 
+            if (!canConnect)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    Status = "Unavailable",
+                    Database = "Unavailable",
+                    UtcNow = DateTimeOffset.UtcNow
+                });
+            }
+
             return Ok(new
             {
-                Status = canConnect ? "Healthy" : "Degraded",
-                Database = canConnect ? "Connected" : "Unavailable",
+                Status = "Healthy",
+                Database = "Connected",
                 UtcNow = DateTimeOffset.UtcNow
             });
         }
         catch (Exception exception)
         {
-            return Ok(new
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
             {
-                Status = "Degraded",
+                Status = "Unavailable",
                 Database = "Unavailable",
                 Error = exception.Message,
                 UtcNow = DateTimeOffset.UtcNow

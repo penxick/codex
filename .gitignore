@@ -9,4 +9,3 @@ obj/
 *.db
 TestResults/
 .DS_Store
-docker/mysql/data/
