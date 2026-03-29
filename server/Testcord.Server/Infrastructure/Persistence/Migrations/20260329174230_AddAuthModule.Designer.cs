@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Testcord.Server.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Testcord.Server.Infrastructure.Persistence;
 namespace Testcord.Server.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TestcordDbContext))]
-    partial class TestcordDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260329174230_AddAuthModule")]
+    partial class AddAuthModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

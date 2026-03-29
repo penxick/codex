@@ -17,11 +17,12 @@ public sealed class SmtpEmailSender : IEmailSender
     public Task SendAsync(string toEmail, string subject, string htmlBody, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            "SMTP email queued for {Recipient} with subject {Subject}. SMTP host: {Host}:{Port}",
+            "SMTP email queued for {Recipient} with subject {Subject}. SMTP host: {Host}:{Port}. Body: {Body}",
             toEmail,
             subject,
             _options.Host,
-            _options.Port);
+            _options.Port,
+            htmlBody);
 
         return Task.CompletedTask;
     }

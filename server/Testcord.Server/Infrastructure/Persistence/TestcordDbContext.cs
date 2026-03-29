@@ -13,8 +13,10 @@ public sealed class TestcordDbContext : DbContext
     public DbSet<Channel> Channels => Set<Channel>();
     public DbSet<DirectChat> DirectChats => Set<DirectChat>();
     public DbSet<DirectChatParticipant> DirectChatParticipants => Set<DirectChatParticipant>();
+    public DbSet<EmailVerificationCode> EmailVerificationCodes => Set<EmailVerificationCode>();
     public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
     public DbSet<Message> Messages => Set<Message>();
+    public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
     public DbSet<ServerEntity> Servers => Set<ServerEntity>();
     public DbSet<ServerMember> ServerMembers => Set<ServerMember>();
     public DbSet<User> Users => Set<User>();
@@ -40,6 +42,19 @@ public sealed class TestcordDbContext : DbContext
         {
             entity.ToTable("FriendRequests");
             entity.HasKey(x => x.Id);
+        });
+
+        modelBuilder.Entity<EmailVerificationCode>(entity =>
+        {
+            entity.ToTable("EmailVerificationCodes");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Email).HasMaxLength(256);
+            entity.Property(x => x.CodeHash).HasMaxLength(128);
+            entity.HasIndex(x => new { x.Email, x.CodeHash });
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.EmailVerificationCodes)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<DirectChat>(entity =>
@@ -79,6 +94,19 @@ public sealed class TestcordDbContext : DbContext
             entity.ToTable("Messages");
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Content).HasMaxLength(4000);
+        });
+
+        modelBuilder.Entity<RefreshSession>(entity =>
+        {
+            entity.ToTable("RefreshSessions");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.TokenHash).HasMaxLength(128);
+            entity.Property(x => x.ReplacedByTokenHash).HasMaxLength(128);
+            entity.HasIndex(x => x.TokenHash).IsUnique();
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.RefreshSessions)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CallSession>(entity =>

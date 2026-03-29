@@ -11,4 +11,7 @@ public sealed class User
     public bool IsEmailConfirmed { get; set; }
     public bool IsOnline { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
+
+    public ICollection<EmailVerificationCode> EmailVerificationCodes { get; set; } = new List<EmailVerificationCode>();
+    public ICollection<RefreshSession> RefreshSessions { get; set; } = new List<RefreshSession>();
 }

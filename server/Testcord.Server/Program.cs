@@ -12,6 +12,12 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
 builder.Services
+    .AddOptions<JwtOptions>()
+    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services
     .AddOptions<SmtpOptions>()
     .Bind(builder.Configuration.GetSection(SmtpOptions.SectionName))
     .ValidateDataAnnotations();
@@ -21,7 +27,21 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
+    .AddJwtBearer(options =>
+    {
+        var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();

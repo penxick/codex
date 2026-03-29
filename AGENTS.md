@@ -20,6 +20,8 @@ Testcord is a long-term desktop communication platform inspired by Discord. We o
 4. Prefer additive changes over rewrites. Foundation decisions should make later modules easier to add.
 5. Every stage must leave the repo buildable and documented.
 6. Never claim a stage is complete until backend, client, and required infrastructure are verified locally.
+7. Stage 1 is closed only after PostgreSQL connectivity, migrations, `/health`, `/swagger`, and `/api/health` are verified.
+8. Stage 2 Auth is closed only after register, verify-email, login, and refresh are verified against the running backend.
 
 ## Architecture Rules
 

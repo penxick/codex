@@ -19,13 +19,14 @@ testcord/
 `-- Testcord.sln
 ```
 
-## Stage 1 Scope
+## Current Scope
 
-Stage 1 establishes the solution, project structure, desktop shell, server startup, PostgreSQL connectivity, EF Core persistence wiring, and the first migration baseline.
+Stage 1 established the solution, project structure, desktop shell, server startup, PostgreSQL connectivity, EF Core persistence wiring, and the first migration baseline.
+Stage 2 has now started on the backend with the Auth module: registration, email verification, login, JWT access token issuance, and refresh token rotation.
 
 Current status:
 
-- Confirmed locally: solution builds, PostgreSQL migration is applied, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, `GET /api/health` returns `200`, and the WPF client builds and launches.
+- Confirmed locally: solution builds, PostgreSQL migrations are applied, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, `GET /api/health` returns `200`, Auth endpoints complete an end-to-end register/verify/login/refresh flow, and the WPF client builds and launches.
 
 ## Projects
 
@@ -53,6 +54,11 @@ Client settings live in:
 Important server environment variables:
 
 - `TESTCORD_ConnectionStrings__DefaultConnection`
+- `TESTCORD_Jwt__Issuer`
+- `TESTCORD_Jwt__Audience`
+- `TESTCORD_Jwt__SigningKey`
+- `TESTCORD_Jwt__AccessTokenMinutes`
+- `TESTCORD_Jwt__RefreshTokenDays`
 - `TESTCORD_Smtp__Host`
 - `TESTCORD_Smtp__Port`
 - `TESTCORD_Smtp__UserName`
@@ -106,8 +112,58 @@ Useful endpoints:
 - `GET /swagger` in Development
 - `GET /api/health`
 - `GET /api/bootstrap`
+- `POST /api/auth/register`
+- `POST /api/auth/verify-email`
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
 
 Swagger is intentionally enabled only in Development through `UseSwagger()` and `UseSwaggerUI()` so it is available for local debugging without being forced on in every environment.
+
+## Auth Module Verification
+
+The backend Auth module is verified locally against PostgreSQL:
+
+- Registration creates a user and an email verification record.
+- Email verification succeeds with the generated code.
+- Login returns JWT access and refresh tokens.
+- Refresh rotates the refresh token and returns a fresh session payload.
+
+Example request payloads:
+
+```json
+POST /api/auth/register
+{
+  "email": "user@testcord.local",
+  "password": "Password123!",
+  "nickname": "user123",
+  "displayName": "User 123"
+}
+```
+
+```json
+POST /api/auth/verify-email
+{
+  "email": "user@testcord.local",
+  "code": "123456"
+}
+```
+
+```json
+POST /api/auth/login
+{
+  "email": "user@testcord.local",
+  "password": "Password123!"
+}
+```
+
+```json
+POST /api/auth/refresh
+{
+  "refreshToken": "PUT_REFRESH_TOKEN_HERE"
+}
+```
+
+For local development, the SMTP sender currently logs the outgoing email body to the server log instead of talking to a real SMTP server. That makes it possible to read the verification code during local testing without adding a mail dependency yet.
 
 ## Run Desktop Client
 
@@ -140,4 +196,4 @@ The Stage 1 PostgreSQL foundation is verified locally:
 
 ## Next Step
 
-Stage 2 can now begin with Auth.
+Continue Stage 2 by wiring the authenticated desktop client flow, persistent session storage, and the first user profile endpoints on top of the verified Auth backend.
