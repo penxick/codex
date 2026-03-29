@@ -19,6 +19,7 @@ Testcord is a long-term desktop communication platform inspired by Discord. We o
 3. Keep modules isolated: Auth, Users, Friends, Messaging, Servers, Channels, Voice, Settings, Notifications.
 4. Prefer additive changes over rewrites. Foundation decisions should make later modules easier to add.
 5. Every stage must leave the repo buildable and documented.
+6. Never claim a stage is complete until backend, client, and required infrastructure are verified locally.
 
 ## Architecture Rules
 

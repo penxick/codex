@@ -28,7 +28,7 @@ Stage 1 establishes the solution, project structure, desktop shell, server start
 Current audit status:
 
 - Confirmed locally: solution builds, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, WPF client builds and launches.
-- Not confirmed locally: MySQL container startup and migration application to a live database, because Docker engine is not available in the current environment.
+- Not confirmed locally: MySQL container startup and migration application to a live database, because the MySQL Docker image pull currently fails with `EOF` during layer download.
 
 ## Projects
 
@@ -72,7 +72,7 @@ docker compose up -d mysql
 
 The default database name is `testcord`.
 
-Important: Stage 1 is not fully complete until Docker Desktop is running and the MySQL container actually starts.
+Important: Stage 1 is not fully complete until Docker Desktop is running, the MySQL image pulls successfully, and the container actually starts.
 
 ## Restore Dependencies
 
@@ -125,7 +125,7 @@ dotnet publish .\server\Testcord.Server\Testcord.Server.csproj -c Release
 
 The remaining blocker is infrastructure verification:
 
-- Docker engine currently does not allow the MySQL container to start.
+- Docker daemon is reachable only with elevated access, but pulling `mysql:8.4` currently fails with `EOF` during image download.
 - Because MySQL is not running, `dotnet dotnet-ef database update` cannot complete against a live database.
 - Until that is fixed, Stage 1 is only partially complete.
 
