@@ -33,7 +33,7 @@ public sealed class ShellViewModel : ViewModelBase
 
         Messages = new ObservableCollection<MessageItemViewModel>
         {
-            new() { Author = "System", Time = "09:00", Content = "Solution, server, shared contracts, local MySQL and EF foundation are in progress." },
+            new() { Author = "System", Time = "09:00", Content = "Solution, server, shared contracts, local PostgreSQL and EF foundation are in progress." },
             new() { Author = "Design", Time = "09:03", Content = "Desktop shell mirrors Discord layout so feature modules can attach without redesign." },
             new() { Author = "Voice", Time = "09:05", Content = "Voice stays MVP-first: signaling now, media transport next stage." }
         };

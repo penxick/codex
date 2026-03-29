@@ -1,6 +1,6 @@
 # Testcord
 
-Testcord is a desktop-first communication platform built with WPF on .NET 8, ASP.NET Core, MySQL, SignalR, and a clean modular architecture intended for long-term product growth.
+Testcord is a desktop-first communication platform built with WPF on .NET 8, ASP.NET Core, PostgreSQL, SignalR, and a clean modular architecture intended for long-term product growth.
 
 ## Repository Layout
 
@@ -21,12 +21,11 @@ testcord/
 
 ## Stage 1 Scope
 
-Stage 1 establishes the solution, project structure, desktop shell, server startup, MySQL container, EF Core persistence wiring, and the first migration baseline.
+Stage 1 establishes the solution, project structure, desktop shell, server startup, PostgreSQL connectivity, EF Core persistence wiring, and the first migration baseline.
 
-Current audit status:
+Current status:
 
-- Confirmed locally: solution builds, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, WPF client builds and launches.
-- Not confirmed locally: migration application to a live database, because local MySQL server is not yet available on this machine.
+- Confirmed locally: solution builds, PostgreSQL migration is applied, backend starts, `GET /health` returns `200`, `GET /swagger` returns `200` in Development, `GET /api/health` returns `200`, and the WPF client builds and launches.
 
 ## Projects
 
@@ -37,7 +36,7 @@ Current audit status:
 ## Prerequisites
 
 - .NET SDK 8.0+
-- Local MySQL Server 8.x
+- Local PostgreSQL Server 18.x
 
 ## Configuration
 
@@ -61,17 +60,21 @@ Important server environment variables:
 - `TESTCORD_Smtp__FromEmail`
 - `TESTCORD_Smtp__FromName`
 
-## Configure Local MySQL
+## Configure Local PostgreSQL
 
 ```powershell
-server=localhost;port=3306;database=testcord;user=root;password=1234
+Host=localhost;Port=5432;Database=testcord;Username=postgres;Password=PUT_PASSWORD_HERE
 ```
 
-1. Install MySQL locally.
-2. Create a root password or another account with permission to create databases.
-3. You do not have to create `testcord` manually if the configured user can create databases. The backend startup and `dotnet dotnet-ef database update` will create it through EF migrations.
-4. Update `server/Testcord.Server/appsettings.json` or set `TESTCORD_ConnectionStrings__DefaultConnection`.
-5. Ensure MySQL is listening on `localhost:3306`.
+1. Ensure PostgreSQL is running on `localhost:5432`.
+2. Create or use a `postgres` password.
+3. Insert the password into `server/Testcord.Server/appsettings.json` or set `TESTCORD_ConnectionStrings__DefaultConnection`.
+4. You do not have to create `testcord` manually if the configured user can create databases. The backend startup and `dotnet dotnet-ef database update` will create it through EF migrations.
+5. If you prefer not to edit `appsettings.json`, set:
+
+```powershell
+$env:TESTCORD_ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=testcord;Username=postgres;Password=PUT_PASSWORD_HERE"
+```
 
 ## Restore Dependencies
 
@@ -83,6 +86,12 @@ dotnet restore
 
 ```powershell
 dotnet dotnet-ef database update --project .\server\Testcord.Server\Testcord.Server.csproj --startup-project .\server\Testcord.Server\Testcord.Server.csproj --no-build
+```
+
+To verify created tables:
+
+```powershell
+& 'D:\postgresql\bin\psql.exe' -w -h localhost -p 5432 -U postgres -d testcord -tAc "SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename;"
 ```
 
 ## Run Server
@@ -120,15 +129,15 @@ Server:
 dotnet publish .\server\Testcord.Server\Testcord.Server.csproj -c Release
 ```
 
-## Stage 1 Blocker
+## Stage 1 Verification
 
-The remaining blocker is infrastructure verification:
+The Stage 1 PostgreSQL foundation is verified locally:
 
-- A local MySQL server is not currently installed or reachable on `localhost:3306`.
-- Because MySQL is not running, `dotnet dotnet-ef database update` cannot complete against a live database.
-- The backend now attempts to apply EF Core migrations on startup, so once local MySQL is reachable the database can be created automatically.
-- Until that is fixed, Stage 1 is only partially complete.
+- PostgreSQL is reachable on `localhost:5432`.
+- Database `testcord` exists.
+- EF Core migration `InitialPostgreSql` is applied.
+- Backend `GET /api/health` reports a connected database.
 
 ## Next Step
 
-After local MySQL is installed and reachable, rerun the migration, verify `GET /api/health` shows database connectivity, and only then move to Auth.
+Stage 2 can now begin with Auth.

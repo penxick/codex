@@ -8,7 +8,7 @@ Testcord is a long-term desktop communication platform inspired by Discord. We o
 
 1. Desktop client: C#, .NET 8, WPF, MVVM, DI, HttpClient, SignalR client.
 2. Server: ASP.NET Core Web API, SignalR, EF Core, JWT authentication.
-3. Database: local MySQL on `localhost:3306`.
+3. Database: local PostgreSQL on `localhost:5432` using EF Core + Npgsql.
 4. Shared contracts: .NET class library for DTOs and transport models.
 5. Electron/Node are not the primary runtime for this codebase and should not be reintroduced as the main app path.
 

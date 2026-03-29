@@ -12,12 +12,6 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
 builder.Services
-    .AddOptions<MySqlOptions>()
-    .Bind(builder.Configuration.GetSection(MySqlOptions.SectionName))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services
     .AddOptions<SmtpOptions>()
     .Bind(builder.Configuration.GetSection(SmtpOptions.SectionName))
     .ValidateDataAnnotations();
@@ -48,7 +42,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception exception)
     {
-        logger.LogWarning(exception, "Database initialization was skipped because the local MySQL server is unavailable or not yet configured.");
+        logger.LogWarning(exception, "Database initialization was skipped because the local PostgreSQL server is unavailable or not yet configured.");
     }
 }
 

@@ -11,12 +11,11 @@ public static class DependencyInjection
     {
         var connectionString =
             configuration.GetConnectionString("DefaultConnection")
-            ?? "server=localhost;port=3306;database=testcord;user=root;password=1234";
-        var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
+            ?? "Host=localhost;Port=5432;Database=testcord;Username=postgres;Password=PUT_PASSWORD_HERE";
 
         services.AddDbContext<TestcordDbContext>(options =>
         {
-            options.UseMySql(connectionString, serverVersion);
+            options.UseNpgsql(connectionString);
         });
 
         services.AddScoped<DatabaseInitializer>();

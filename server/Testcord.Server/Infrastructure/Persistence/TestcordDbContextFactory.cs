@@ -7,11 +7,12 @@ public sealed class TestcordDbContextFactory : IDesignTimeDbContextFactory<Testc
 {
     public TestcordDbContext CreateDbContext(string[] args)
     {
-        var connectionString = "server=localhost;port=3306;database=testcord;user=root;password=1234";
+        var connectionString =
+            Environment.GetEnvironmentVariable("TESTCORD_ConnectionStrings__DefaultConnection")
+            ?? "Host=localhost;Port=5432;Database=testcord;Username=postgres;Password=PUT_PASSWORD_HERE";
         var optionsBuilder = new DbContextOptionsBuilder<TestcordDbContext>();
-        var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
 
-        optionsBuilder.UseMySql(connectionString, serverVersion);
+        optionsBuilder.UseNpgsql(connectionString);
 
         return new TestcordDbContext(optionsBuilder.Options);
     }
