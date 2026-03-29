@@ -68,9 +68,10 @@ server=localhost;port=3306;database=testcord;user=root;password=1234
 ```
 
 1. Install MySQL locally.
-2. Create database `testcord`.
-3. Update `server/Testcord.Server/appsettings.json` or set `TESTCORD_ConnectionStrings__DefaultConnection`.
-4. Ensure MySQL is listening on `localhost:3306`.
+2. Create a root password or another account with permission to create databases.
+3. You do not have to create `testcord` manually if the configured user can create databases. The backend startup and `dotnet dotnet-ef database update` will create it through EF migrations.
+4. Update `server/Testcord.Server/appsettings.json` or set `TESTCORD_ConnectionStrings__DefaultConnection`.
+5. Ensure MySQL is listening on `localhost:3306`.
 
 ## Restore Dependencies
 
@@ -125,6 +126,7 @@ The remaining blocker is infrastructure verification:
 
 - A local MySQL server is not currently installed or reachable on `localhost:3306`.
 - Because MySQL is not running, `dotnet dotnet-ef database update` cannot complete against a live database.
+- The backend now attempts to apply EF Core migrations on startup, so once local MySQL is reachable the database can be created automatically.
 - Until that is fixed, Stage 1 is only partially complete.
 
 ## Next Step

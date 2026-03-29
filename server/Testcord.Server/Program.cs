@@ -37,6 +37,21 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var databaseInitializer = scope.ServiceProvider.GetRequiredService<Testcord.Server.Infrastructure.Persistence.DatabaseInitializer>();
+        await databaseInitializer.InitializeAsync();
+    }
+    catch (Exception exception)
+    {
+        logger.LogWarning(exception, "Database initialization was skipped because the local MySQL server is unavailable or not yet configured.");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

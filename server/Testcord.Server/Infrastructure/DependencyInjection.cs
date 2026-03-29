@@ -19,6 +19,7 @@ public static class DependencyInjection
             options.UseMySql(connectionString, serverVersion);
         });
 
+        services.AddScoped<DatabaseInitializer>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddSingleton<ISystemClock, SystemClock>();
 
